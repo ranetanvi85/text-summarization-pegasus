@@ -1,15 +1,18 @@
 import streamlit as st
-from transformers import pipeline
+from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 from PyPDF2 import PdfReader
 from docx import Document
 
-# Load Pegasus summarization model
-summarizer = pipeline("summarization", model="google/pegasus-xsum")
+# Load the Pegasus model and tokenizer
+model_name = "google/pegasus-xsum"
+tokenizer = PegasusTokenizer.from_pretrained(model_name)
+model = PegasusForConditionalGeneration.from_pretrained(model_name)
 
 # Function to summarize text
 def summarize_text(text):
-    summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
-    return summary[0]['summary_text']
+    inputs = tokenizer(text, return_tensors="pt", max_length=1024, truncation=True)
+    summary_ids = model.generate(inputs["input_ids"], max_length=150, min_length=30, length_penalty=2.0, num_beams=4, early_stopping=True)
+    return tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
 # Function to read PDF file content
 def read_pdf(file):
