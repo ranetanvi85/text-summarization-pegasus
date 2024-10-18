@@ -3,8 +3,8 @@ from transformers import pipeline
 from PyPDF2 import PdfReader
 from docx import Document
 
-# Load summarization model from Hugging Face
-summarizer = pipeline("summarization")
+# Load Pegasus summarization model
+summarizer = pipeline("summarization", model="google/pegasus-xsum")
 
 # Function to summarize text
 def summarize_text(text):
@@ -26,7 +26,7 @@ def read_docx(file):
     return text
 
 # Streamlit UI
-st.title("Text Summarization App")
+st.title("Text Summarization App with Pegasus")
 
 # File uploader for PDF or Word documents
 uploaded_file = st.file_uploader("Upload a PDF or Word Document", type=['pdf', 'docx'])
